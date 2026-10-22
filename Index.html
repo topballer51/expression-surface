@@ -1,0 +1,190 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover"><meta name="apple-mobile-web-app-capable" content="yes"><title>Expression Surface V4.8 · Key Center</title><style>
+:root{color-scheme:dark;--bg:#10121c;--panel:#1c2130;--line:#343d52;--ink:#f2f4ff;--sub:#aeb9ce;--accent:#74e2ff}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overscroll-behavior:none}body{background:var(--bg);color:var(--ink);font:14px system-ui,-apple-system,sans-serif;display:flex;flex-direction:column;overflow:hidden}button,select,input{font:inherit}button,select{color:var(--ink);background:#2a3448;border:1px solid #4b5b76;border-radius:9px;padding:8px}button:active{background:#42627a}header{display:flex;align-items:center;gap:9px;padding:8px 12px;background:#171c2a;flex-wrap:wrap}header strong{font-size:17px;letter-spacing:.3px}header small{color:var(--sub)}header .spacer{flex:1}#settings{display:flex;gap:12px;flex-wrap:wrap;align-items:end;background:var(--panel);padding:10px 12px;max-height:38vh;overflow:auto;overscroll-behavior:contain}label{display:flex;flex-direction:column;gap:4px;color:var(--sub);font-size:11px;min-width:100px}label select,label input{width:100%;min-height:34px}input[type=range]{accent-color:#67d8f5}#stage{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;overscroll-behavior:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}canvas{display:block;width:100%;height:100%;touch-action:none}#hud{position:absolute;left:12px;top:10px;pointer-events:none;padding:5px 9px;border-radius:8px;background:#090e1b99;color:#e8f7ff;font-size:12px}#status{font-size:11px;color:#a8c4ce;padding:4px 12px;background:#111724;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}#settings.hidden{display:none}.active{background:#17576d;border-color:#67d8f5}.recording{background:#a3324c!important}body.performance header{padding:5px 10px}body.performance header small{display:none}body.performance #status,body.performance #tabs{display:none}#tabs{display:flex;gap:6px;padding:6px 12px;background:#161c2a;border-top:1px solid #2e3950}#tabs button{padding:7px 15px}#tabs button.selected{background:#1e6379;border-color:#76e4ff}#settings label{flex:0 1 150px}#settings label[data-group]{display:none}#settings label[data-group].shown{display:flex}#settings{min-height:0;max-height:30vh}#hud{max-width:65%;white-space:normal}@media(max-width:650px){header strong{font-size:14px}#settings{gap:8px}label{min-width:85px}button,select{padding:6px}}
+#registerHud{position:absolute;right:12px;top:10px;background:#091321b8;border:1px solid #506078;border-radius:8px;padding:5px 9px;color:#e3f7ff;font-size:12px;pointer-events:none}header #shiftDown,header #shiftUp{background:#203d52;border-color:#42677d}body.performance header #save,body.performance header #load,body.performance header #record,body.performance header #exportPreset,body.performance header #importPreset,body.performance header #events,body.performance header #midiExport{display:none}@media(max-width:700px){header{gap:5px;padding:5px}header button{padding:6px;font-size:12px}#hud{font-size:10px;max-width:55%}}
+
+/* iPhone performance layout: stage always owns remaining visible viewport. */
+html,body{height:100%;height:100dvh;max-width:100%;overflow:hidden}
+body{padding-bottom:env(safe-area-inset-bottom,0px)}
+header{flex-shrink:0;padding-top:max(5px,env(safe-area-inset-top,0px));gap:5px}
+#phoneTools{display:contents}
+#phoneMenu{display:none}
+#stage{min-height:0;flex:1 1 auto}
+#tabs{flex-shrink:0;overflow-x:auto}
+#settings{flex-shrink:0}
+@media(max-width:900px) and (pointer:coarse){
+ header{flex-wrap:nowrap;padding-left:max(6px,env(safe-area-inset-left,0px));padding-right:max(6px,env(safe-area-inset-right,0px));gap:4px}
+ header strong{font-size:11px;white-space:nowrap}
+ header small,header .spacer,header #full{display:none!important}
+ header button{font-size:10px;padding:7px 4px;white-space:nowrap;min-height:34px}
+ #phoneMenu{display:block}
+ #phoneTools{display:none;position:absolute;z-index:30;right:6px;top:calc(44px + env(safe-area-inset-top,0px));width:min(290px,90vw);max-height:55dvh;overflow:auto;background:#202a3c;border:1px solid #56708d;border-radius:12px;padding:9px;box-shadow:0 8px 24px #0009;grid-template-columns:1fr 1fr;gap:6px}
+ #phoneTools.open{display:grid}
+ #phoneTools button{white-space:normal;min-height:42px}
+ #settings{max-height:33dvh;overflow:auto;gap:8px;padding:8px}
+ #settings label{flex:1 1 110px;min-width:110px}
+ #tabs{padding:4px 6px;gap:3px}
+ #tabs button{font-size:11px;padding:6px 9px;white-space:nowrap}
+ #hud{display:none}
+ #registerHud{font-size:10px;top:4px;right:5px;padding:3px 6px;opacity:.8}
+ #status{font-size:10px}
+ body.performance header{padding-top:max(4px,env(safe-area-inset-top,0px))}
+ body.performance #phoneMenu{display:none}
+}
+@media(max-width:900px) and (pointer:coarse) and (orientation:landscape){
+ header strong{font-size:12px}
+ header button{min-height:29px;padding:4px 7px}
+ #settings{max-height:43dvh}
+ #registerHud{font-size:9px}
+}
+
+/* Phone viewport: never allow the editor to squash the instrument into a strip. */
+html,body{height:100%;height:100dvh;max-height:100dvh}
+body{min-height:0}
+#stage{min-height:32vh;min-height:32dvh}
+@media(max-width:900px) and (pointer:coarse){
+ #settings:not(.hidden){max-height:min(26dvh,175px);overflow-y:auto}
+ #stage{min-height:38dvh}
+}
+@media(max-width:900px) and (pointer:coarse) and (orientation:landscape){
+ header{flex-shrink:0;min-height:30px}
+ #tabs{flex-shrink:0;padding:2px 5px}
+ #tabs button{padding:3px 7px;min-height:25px}
+ #settings:not(.hidden){max-height:25dvh;padding:4px 6px}
+ #settings label{min-width:95px}
+ #stage{min-height:38dvh}
+ #status{display:none}
+}
+/* Keep playing area protected from browser gesture scrolling. */
+html,body,#stage,canvas{overscroll-behavior:none;-webkit-user-select:none;user-select:none}
+#stage,canvas{touch-action:none}
+body.performance #tabs,body.performance #settings{display:none!important}
+@media(max-width:900px) and (pointer:coarse){body.performance header{min-height:38px}body.performance #toggle{touch-action:manipulation}}
+/* Keep playable notes away from iOS edge-swipe zones. */
+#stage{padding-left:max(12px,env(safe-area-inset-left,0px));padding-right:max(12px,env(safe-area-inset-right,0px));padding-top:8px;padding-bottom:max(24px,env(safe-area-inset-bottom,0px));background:#0b1020}
+#stage canvas{width:100%;height:100%;border-radius:5px}
+@media(orientation:landscape){#stage{padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));padding-bottom:max(16px,env(safe-area-inset-bottom,0px))}}
+</style></head><body><header><strong>Expression Surface</strong><small>iPhone · v4.8 sound studio</small><div class="spacer"></div><button id="shiftDown" title="Move grid down one octave">◀ Oct</button><button id="shiftUp" title="Move grid up one octave">Oct ▶</button><button id="play">Enable Audio</button><button id="testTone" type="button" title="Test iPhone audio">♪ Test</button><button id="phoneMenu" type="button" aria-expanded="false">More ▾</button><div id="phoneTools"><button id="record">● Record</button><button id="save">Save preset</button><button id="load">Load preset</button><button id="exportPreset">Export setup</button><button id="importPreset">Import setup</button><input id="presetFile" type="file" accept=".json,application/json" hidden><button id="events">● MIDI Take</button><button id="midiExport">Export MIDI</button></div><button id="toggle">Performance View</button><button id="full">Fullscreen</button></header><nav id="tabs" aria-label="Instrument settings"><button data-tab="layout" class="selected">Layout</button><button data-tab="expression">Expression</button><button data-tab="sound">Sound</button><button data-tab="midi">MIDI & Display</button></nav><section id="settings">
+<label>Layout<select id="layout"><option value="fourths">Fourths Grid</option><option value="chromatic">Chromatic Rows</option><option value="guitar">Guitar Tuning</option><option value="piano">Piano</option></select></label>
+<label>Rows<input id="rows" type="range" min="3" max="12" value="7"><span id="rowsVal">7</span></label>
+<label>Columns<input id="cols" type="range" min="5" max="30" value="18"><span id="colsVal">18</span></label>
+<label>Root<select id="root"></select></label>
+<label>Scale<select id="scale"><option value="chromatic">Chromatic</option><option value="major">Major</option><option value="minor">Natural minor</option><option value="dorian">Dorian</option><option value="mixolydian">Mixolydian</option><option value="pent">Major pentatonic</option><option value="minpent">Minor pentatonic</option><option value="blues">Blues</option><option value="harmonic">Harmonic minor</option></select></label>
+<label>Scale behavior<select id="snap"><option value="off">Color only</option><option value="soft">Magnetic</option><option value="hard">Snap pitch</option></select></label>
+<label>Register<select id="octave"><option value="-24">-2 oct</option><option value="-12">-1 oct</option><option value="0" selected>Normal</option><option value="12">+1 oct</option><option value="24">+2 oct</option></select></label>
+<label>Voice mode<select id="voiceMode"><option value="poly" selected>Poly · chords</option><option value="mono">Mono · lead</option></select></label>
+<label>Instrument<select id="wave"><option value="warm">Warm synth</option><option value="pluck">Plucked string</option><option value="sine">Sine / flute</option><option value="saw">Analog saw</option><option value="organ">Organ</option><option value="fm">FM bell</option><option value="epiano">Electric piano</option><option value="brass">Soft brass</option><option value="pad">Velvet pad</option><option value="reed">Reed organ</option><option value="lead">Expressive lead</option><option value="soloBrass">Solo brass</option><option value="leadSquare">Pulse lead</option><option value="nylon">Nylon guitar (synth)</option><option value="acousticPiano">Acoustic piano (synth)</option></select></label>
+<label>Attack (ms)<input id="attack" type="range" min="2" max="450" value="12"><span id="attackVal">12</span></label>
+<label>Release (ms)<input id="release" type="range" min="30" max="2200" value="330"><span id="releaseVal">330</span></label>
+<label>Glide (ms)<input id="glide" type="range" min="0" max="280" value="35"><span id="glideVal">35</span></label>
+<label>Pitch gesture<select id="gesture"><option value="continuous">Continuous across tiles</option><option value="quantized">Discrete notes</option><option value="bend">Bend within tile</option></select></label>
+<label>Pitch center<select id="center"><option value="0">Free / no center</option><option value="0.10" selected>Gentle (10%)</option><option value="0.22">Stable (22%)</option><option value="0.36">Firm (36%)</option></select></label>
+<label>Bend range<select id="bend"><option value="1">±1 semitone</option><option value="2">±2 semitones</option><option value="12">±12 semitones</option></select></label>
+<label>Touch response<select id="touchResponse"><option value="soft">Soft</option><option value="balanced" selected>Balanced</option><option value="bright">Bright</option></select></label>
+<label>Vertical touch<select id="vertical"><option value="tone">Timbre / brightness</option><option value="volume">Volume / expression</option><option value="none">None</option></select></label>
+<label>Filter cutoff<input id="cutoff" type="range" min="180" max="12000" step="10" value="9000"><span id="cutoffVal">9000 Hz</span></label>
+<label>Filter resonance<input id="resonance" type="range" min="1" max="15" step=".5" value="1"><span id="resonanceVal">1</span></label>
+<label>Low EQ<input id="eqLow" type="range" min="-15" max="15" value="0"><span id="eqLowVal">0 dB</span></label>
+<label>Mid EQ<input id="eqMid" type="range" min="-15" max="15" value="0"><span id="eqMidVal">0 dB</span></label>
+<label>High EQ<input id="eqHigh" type="range" min="-15" max="15" value="0"><span id="eqHighVal">0 dB</span></label>
+<label>Delay<input id="delay" type="range" min="0" max="65" value="13"><span id="delayVal">13%</span></label>
+<label>Reverb<input id="reverb" type="range" min="0" max="65" value="17"><span id="reverbVal">17%</span></label>
+<label>Master volume<input id="volume" type="range" min="0" max="100" value="65"><span id="volumeVal">65%</span></label>
+<label>MIDI output<select id="midi"><option value="">Off / unavailable</option></select></label>
+<label>Touch trails<select id="trails"><option value="on">On</option><option value="off" selected>Off</option></select></label><label>Show labels<select id="labels"><option value="name">Note names</option><option value="octave">Names + octaves</option><option value="none">No labels</option></select></label>
+</section><main id="stage"><canvas id="surface"></canvas><div id="hud">Touch to play · drag to glide · white = pressed · gold = matching pitch</div><div id="registerHud">Register: C3</div></main><div id="status">Safari on iPad supports touch synthesis. External Web MIDI output depends on browser support.</div>
+<script>
+(()=>{'use strict';
+let viewportShift=0;const $=id=>document.getElementById(id),canvas=$('surface'),ctx=canvas.getContext('2d'),stage=$('stage'),names=['C','C♯','D','D♯','E','F','F♯','G','G♯','A','A♯','B'];
+const scales={chromatic:[0,1,2,3,4,5,6,7,8,9,10,11],major:[0,2,4,5,7,9,11],minor:[0,2,3,5,7,8,10],dorian:[0,2,3,5,7,9,10],mixolydian:[0,2,4,5,7,9,10],pent:[0,2,4,7,9],minpent:[0,3,5,7,10],blues:[0,3,5,6,7,10],harmonic:[0,2,3,5,7,8,11]};
+for(let i=0;i<12;i++)$('root').add(new Option(names[i],i));
+let ac,master,eqLowNode,eqMidNode,eqHighNode,delayNode,feedback,delayWet,reverbWet,compressor,recorder,recordChunks=[],midiAccess,midiOutput;const touches=new Map();let width=1,height=1,scaleFactor=1,recording=false;let taking=false,takeStart=0,take=[],takeHeld=new Map();
+function val(id){return $(id).value}function num(id){return +val(id)}function noteName(n){return names[((Math.round(n)%12)+12)%12]+(Math.floor(Math.round(n)/12)-1)}
+function noteAt(col,row){let base=48+num('root')+num('octave')+viewportShift;const layout=val('layout');if(layout==='fourths'){if(num('rows')===5&&num('cols')===6){/* Anchor key center at the left of the two middle columns, row 3. */return 60+num('root')+num('octave')+viewportShift+(2-row)*5+(col-2);}return base+(num('rows')-1-row)*5+col;}if(layout==='chromatic')return base+(num('rows')-1-row)*12+col;if(layout==='guitar'){let tuning=[40,45,50,55,59,64];return tuning[Math.min(5,Math.max(0,num('rows')-1-row))]+num('root')+num('octave')+viewportShift+col;}return base+col;}
+function isScale(n){return scales[val('scale')].includes((((Math.round(n)-num('root'))%12)+12)%12)}
+function nearestScale(n){let best=n,dist=Infinity;for(let i=Math.floor(n)-4;i<=Math.ceil(n)+4;i++){if(isScale(i)&&Math.abs(i-n)<dist){best=i;dist=Math.abs(i-n)}}return best}
+function guided(n){if(val('snap')==='hard')return nearestScale(n);if(val('snap')==='soft'){const q=nearestScale(n),d=q-n;return n+d*.58*Math.max(0,1-Math.abs(d)/1.8)}return n}
+function cell(x,y){const cols=num('cols'),rows=num('rows');return{col:Math.max(0,Math.min(cols-1,Math.floor(x/width*cols))),row:Math.max(0,Math.min(rows-1,Math.floor(y/height*rows)))}}
+function centeredOffset(offset){const dead=num('center');if(!dead)return offset;const a=Math.abs(offset);if(a<=dead)return 0;return Math.sign(offset)*(a-dead)/(1-dead)}
+function pitchAt(x,y,start){const cols=num('cols'),rows=num('rows'),cw=width/cols,ch=height/rows,c=cell(x,y),g=val('gesture');if(g==='bend'){return guided(start.base+centeredOffset(Math.max(-1,Math.min(1,(x-start.x)/(cw*.75))))*num('bend'))}if(g==='quantized')return guided(noteAt(c.col,c.row));if(val('layout')==='piano')return guided(noteAt(c.col,c.row)+(x/cw-c.col-.5));return guided(noteAt(c.col,c.row)+centeredOffset((x/cw-c.col-.5)*2)*.5);}
+function freq(n){return 440*Math.pow(2,(n-69)/12)}
+function impulse(context){const len=Math.floor(context.sampleRate*1.4),b=context.createBuffer(2,len,context.sampleRate);for(let c=0;c<2;c++){const d=b.getChannelData(c);for(let i=0;i<len;i++)d[i]=(Math.random()*2-1)*Math.pow(1-i/len,2.5)}return b}
+async function enable(){if(!ac){ac=new (window.AudioContext||window.webkitAudioContext)();master=ac.createGain();master.gain.value=num('volume')/100;compressor=ac.createDynamicsCompressor();compressor.threshold.value=-13;compressor.ratio.value=3;eqLowNode=ac.createBiquadFilter();eqLowNode.type='lowshelf';eqLowNode.frequency.value=200;
+eqMidNode=ac.createBiquadFilter();eqMidNode.type='peaking';eqMidNode.frequency.value=1100;eqMidNode.Q.value=.85;
+eqHighNode=ac.createBiquadFilter();eqHighNode.type='highshelf';eqHighNode.frequency.value=4200;
+master.connect(eqLowNode);eqLowNode.connect(eqMidNode);eqMidNode.connect(eqHighNode);eqHighNode.connect(compressor);compressor.connect(ac.destination);delayNode=ac.createDelay(1);delayNode.delayTime.value=.29;feedback=ac.createGain();feedback.gain.value=.26;delayWet=ac.createGain();delayNode.connect(feedback);feedback.connect(delayNode);delayNode.connect(delayWet);delayWet.connect(master);reverbWet=ac.createGain();const con=ac.createConvolver();con.buffer=impulse(ac);con.connect(reverbWet);reverbWet.connect(master);master.connect(delayNode);master.connect(con);setEffects();}try{await ac.resume();$('play').textContent=ac.state==='running'?'Audio On':'Tap Audio';$('play').style.borderColor=ac.state==='running'?'#4ce6a3':'#f2b566';$('status').textContent='Audio engine: '+ac.state+(ac.state==='running'?' · ready':' · open in Safari and tap Audio');}catch(err){$('play').textContent='Retry Audio';$('status').textContent='Audio unavailable: '+err.message;}}
+function setEffects(){if(!ac)return;master.gain.setTargetAtTime(num('volume')/100,ac.currentTime,.015);delayWet.gain.value=num('delay')/100;reverbWet.gain.value=num('reverb')/100;
+eqLowNode.gain.setTargetAtTime(num('eqLow'),ac.currentTime,.02);
+eqMidNode.gain.setTargetAtTime(num('eqMid'),ac.currentTime,.02);
+eqHighNode.gain.setTargetAtTime(num('eqHigh'),ac.currentTime,.02);
+for(const t of touches.values())if(t.voice?.filter){t.voice.filter.frequency.setTargetAtTime(num('cutoff'),ac.currentTime,.025);t.voice.filter.Q.setTargetAtTime(num('resonance'),ac.currentTime,.025)}}
+function makeVoice(n){const t=ac.currentTime,voice={base:n,osc:[],gain:ac.createGain(),filter:ac.createBiquadFilter(),freq:n};voice.filter.type='lowpass';voice.filter.frequency.value=num('cutoff');voice.filter.Q.value=num('resonance');voice.gain.gain.setValueAtTime(.0001,t);voice.gain.gain.exponentialRampToValueAtTime(val('touchResponse')==='soft'?.14:val('touchResponse')==='bright'?.23:.19,t+Math.max(.003,num('attack')/1000));voice.filter.connect(voice.gain);voice.gain.connect(master);const w=val('wave');function oscillator(type,ratio,amount){const o=ac.createOscillator(),g=ac.createGain();o.type=type;o.frequency.value=freq(n)*ratio;g.gain.value=amount;o.connect(g);g.connect(voice.filter);o.start();voice.osc.push({o,g,ratio})}if(w==='sine')oscillator('sine',1,1);else if(w==='organ'){oscillator('sine',1,.7);oscillator('sine',2,.27);oscillator('sine',3,.13)}else if(w==='saw')oscillator('sawtooth',1,.65);else if(w==='fm'){oscillator('sine',1,.7);oscillator('sine',2.01,.25);oscillator('sine',3.99,.12)}else if(w==='epiano'){oscillator('sine',1,.85);oscillator('sine',2,.24);oscillator('sine',3.01,.07);voice.filter.frequency.value=3400;voice.gain.gain.setTargetAtTime(.045,t+.13,1.7)}else if(w==='brass'){oscillator('sawtooth',1,.48);oscillator('triangle',1,.32);oscillator('sine',2,.14);voice.filter.frequency.value=1800;voice.filter.frequency.setTargetAtTime(3600,t+.08,.12)}else if(w==='pad'){oscillator('sawtooth',1,.28);oscillator('triangle',1.004,.42);oscillator('sine',2,.15);voice.filter.frequency.value=1600;voice.gain.gain.setTargetAtTime(.17,t+.04,.12)}else if(w==='reed'){oscillator('square',1,.25);oscillator('sine',2,.38);oscillator('sine',3,.15);voice.filter.frequency.value=2900}else if(w==='lead'){oscillator('sawtooth',1,.38);oscillator('square',1.003,.17);oscillator('sine',2,.12)}
+else if(w==='soloBrass'){oscillator('sawtooth',1,.28);oscillator('triangle',1,.48);oscillator('sine',2,.16)}
+else if(w==='leadSquare'){oscillator('square',1,.38);oscillator('sine',1,.38);oscillator('sine',2,.1)}
+else if(w==='nylon'){oscillator('triangle',1,.68);oscillator('sine',2,.22);oscillator('sine',3,.08);voice.gain.gain.setTargetAtTime(.055,t+.06,.42)}
+else if(w==='acousticPiano'){oscillator('sine',1,.65);oscillator('triangle',1.002,.22);oscillator('sine',2,.18);oscillator('sine',3,.06);voice.gain.gain.setTargetAtTime(.075,t+.08,.9)}
+else if(w==='pluck'){oscillator('triangle',1,.75);oscillator('sawtooth',2,.11);voice.filter.frequency.value=2800;voice.gain.gain.setTargetAtTime(.085,t+.09,.6)}else{oscillator('triangle',1,.8);oscillator('sine',2,.22);oscillator('sine',3,.055)}voice.setPitch=(p,immediate=false)=>{voice.freq=p;const tt=ac.currentTime,gl=immediate?0:num('glide')/1000;for(const {o,ratio} of voice.osc){o.frequency.cancelScheduledValues(tt);o.frequency.setTargetAtTime(freq(p)*ratio,tt,Math.max(.001,gl/3))}};voice.setExpress=(v)=>{const tt=ac.currentTime;if(val('vertical')==='tone')voice.filter.frequency.setTargetAtTime(Math.min(12000,180+v*num('cutoff')),tt,.025);if(val('vertical')==='volume')voice.gain.gain.setTargetAtTime(.06+v*.22,tt,.025)};voice.stop=()=>{const tt=ac.currentTime;voice.gain.gain.cancelScheduledValues(tt);voice.gain.gain.setTargetAtTime(.0001,tt,Math.max(.008,num('release')/1000/4));for(const {o} of voice.osc){try{o.stop(tt+Math.max(.08,num('release')/1000)*2)}catch(e){}}};return voice}
+function takeEvent(type,n,id){if(!taking)return;const ms=Math.max(0,Math.round(performance.now()-takeStart));if(type==='on'){takeHeld.set(id,n);take.push({ms,type:'on',n,id})}else if(type==='off'&&takeHeld.has(id)){take.push({ms,type:'off',n:takeHeld.get(id),id});takeHeld.delete(id)}else if(type==='pitch'&&takeHeld.has(id)&&takeHeld.get(id)!==n){take.push({ms,type:'off',n:takeHeld.get(id),id});take.push({ms,type:'on',n,id});takeHeld.set(id,n)}}
+function midiSend(bytes){if(midiOutput)try{midiOutput.send(bytes)}catch(e){}}function midiNote(n,on){midiSend([on?0x90:0x80,Math.max(0,Math.min(127,Math.round(n))),on?100:0])}
+function pointerPos(e){const r=canvas.getBoundingClientRect();return{x:Math.max(0,Math.min(width-1,e.clientX-r.left)),y:Math.max(0,Math.min(height-1,e.clientY-r.top))}}
+let redrawPending=false;function requestDraw(){if(redrawPending)return;redrawPending=true;requestAnimationFrame(()=>{redrawPending=false;draw()})}
+// Mono uses last-pressed-note priority. Other fingers stay held so releasing the
+// newest finger returns to the preceding note. Poly retains independent voices.
+let monoOrder=[];
+function voiceStart(t,id){t.voice=makeVoice(t.pitch);t.note=Math.round(t.pitch);midiNote(t.note,true);takeEvent('on',t.note,id)}
+function voiceEnd(t,id){if(!t.voice)return;midiNote(t.note,false);takeEvent('off',t.note,id);t.voice.stop();t.voice=null}
+function monoPromote(){if(val('voiceMode')!=='mono')return;while(monoOrder.length&&!touches.has(monoOrder[monoOrder.length-1]))monoOrder.pop();const id=monoOrder.at(-1);if(id!==undefined){const t=touches.get(id);if(t&&!t.voice)voiceStart(t,id)}}
+function down(e){e.preventDefault();if(!ac||ac.state!=='running'){enable();}if(touches.has(e.pointerId))return;const p=pointerPos(e),c=cell(p.x,p.y),base=noteAt(c.col,c.row);const t={...p,trail:[{x:p.x,y:p.y}],base,voice:null,pitch:guided(base),note:Math.round(base),cell:c,originX:p.x,originY:p.y,started:performance.now(),lastSeen:performance.now()};if(val('voiceMode')==='mono'){for(const [id,other] of touches)voiceEnd(other,id);monoOrder.push(e.pointerId)}touches.set(e.pointerId,t);voiceStart(t,e.pointerId);try{canvas.setPointerCapture(e.pointerId)}catch(err){}requestDraw()}
+function move(e){const t=touches.get(e.pointerId);if(!t)return;e.preventDefault();const p=pointerPos(e),newPitch=pitchAt(p.x,p.y,{base:t.base,x:t.originX,y:t.originY});t.x=p.x;t.y=p.y;t.lastSeen=performance.now();if(val('trails')==='on'){t.trail.push({x:p.x,y:p.y});if(t.trail.length>18)t.trail.shift();}t.pitch=newPitch;t.cell=cell(p.x,p.y);if(t.voice){t.voice.setPitch(newPitch);const ch=height/num('rows');t.voice.setExpress(1-((p.y%ch)/ch));const next=Math.round(newPitch);if(next!==t.note){midiNote(t.note,false);midiNote(next,true);takeEvent('pitch',next,e.pointerId);t.note=next;}}requestDraw()}
+function up(e){const t=touches.get(e.pointerId);if(!t)return;e.preventDefault();voiceEnd(t,e.pointerId);touches.delete(e.pointerId);monoOrder=monoOrder.filter(id=>id!==e.pointerId);monoPromote();requestDraw()}
+canvas.addEventListener('pointerdown',down);canvas.addEventListener('pointermove',move);canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);canvas.addEventListener('lostpointercapture',up);
+function allNotesOff(){for(const [id,t] of touches)voiceEnd(t,id);touches.clear();monoOrder=[];requestDraw()}
+$('voiceMode').addEventListener('change',()=>{allNotesOff();$('status').textContent=val('voiceMode')==='mono'?'Mono lead: last note wins; release to return to held note.':'Poly: independent voices for chords.'});
+window.addEventListener('blur',allNotesOff);window.addEventListener('pagehide',allNotesOff);
+// A safety valve for interrupted iPad gestures: do not sustain an orphaned note forever.
+setInterval(()=>{if(!touches.size)return;for(const [id,t] of touches){if(performance.now()-(t.lastSeen||t.started||0)>15000){voiceEnd(t,id);touches.delete(id);monoOrder=monoOrder.filter(v=>v!==id);monoPromote()}}requestDraw()},2000);
+// iOS browser zoom/scroll protection, scoped to the playable surface.
+for(const ev of ['touchmove','gesturestart','gesturechange','gestureend','dblclick','contextmenu'])stage.addEventListener(ev,e=>{if(e.cancelable)e.preventDefault()},{passive:false});
+function resize(){const r=canvas.getBoundingClientRect();width=Math.max(1,r.width);height=Math.max(1,r.height);scaleFactor=Math.min(2,devicePixelRatio||1);canvas.width=Math.round(width*scaleFactor);canvas.height=Math.round(height*scaleFactor);ctx.setTransform(scaleFactor,0,0,scaleFactor,0,0);draw()}
+function color(n,active,inScale){const hue=(((n%12)+12)%12)*30+195;return `hsl(${hue%360} ${active?90:inScale?54:18}% ${active?60:inScale?30:19}%)`}
+function draw(){$('registerHud').textContent='Bottom left: '+noteName(noteAt(0,num('rows')-1));ctx.clearRect(0,0,width,height);const cols=num('cols'),rows=num('rows'),cw=width/cols,ch=height/rows;const held=new Set([...touches.values()].map(t=>Math.round(t.pitch)));const pressed=new Set([...touches.values()].map(t=>noteAt(t.cell.col,t.cell.row)));for(let row=0;row<rows;row++){for(let col=0;col<cols;col++){const n=noteAt(col,row),on=held.has(n),direct=pressed.has(n),scale=isScale(n),x=col*cw,y=row*ch;ctx.fillStyle=color(n,on,scale);ctx.fillRect(x+1,y+1,cw-2,ch-2);if(on){ctx.strokeStyle=direct?'#fff':'#ffe18b';ctx.lineWidth=direct?3:1.8;ctx.strokeRect(x+2,y+2,cw-4,ch-4)}else if(((n-num('root'))%12+12)%12===0){ctx.strokeStyle='#77e8ff99';ctx.lineWidth=1.3;ctx.strokeRect(x+2,y+2,cw-4,ch-4)}if(val('labels')!=='none'&&cw>22&&ch>22){ctx.fillStyle=on?'#081b2a':'#eff5ff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=`${Math.max(9,Math.min(17,cw*.28,ch*.28))}px system-ui`;ctx.fillText(val('labels')==='octave'?noteName(n):names[((n%12)+12)%12],x+cw/2,y+ch/2)}}}for(const t of touches.values()){if(val('trails')==='on'&&t.trail.length>1){ctx.beginPath();ctx.moveTo(t.trail[0].x,t.trail[0].y);for(const point of t.trail.slice(1))ctx.lineTo(point.x,point.y);ctx.strokeStyle='#ffffffb8';ctx.lineWidth=3;ctx.lineCap='round';ctx.lineJoin='round';ctx.stroke()}ctx.beginPath();ctx.arc(t.x,t.y,Math.min(cw,ch)*.26,0,Math.PI*2);ctx.fillStyle='#ffffff55';ctx.fill();ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke()}}
+const ids=['trails','layout','rows','cols','root','scale','snap','octave','wave','attack','release','glide','gesture','center','bend','touchResponse','vertical','delay','reverb','volume','cutoff','resonance','eqLow','eqMid','eqHigh','labels','voiceMode'];for(const id of ids){$(id).addEventListener('input',()=>{const out=$(id+'Val');if(out)out.textContent=$(id).value+(['delay','reverb','volume'].includes(id)?'%':['eqLow','eqMid','eqHigh'].includes(id)?' dB':id==='cutoff'?' Hz':'');setEffects();draw()})}
+// Phone-friendly starting geometry; the original desktop/iPad file is unchanged.
+if(matchMedia('(max-width:900px) and (pointer:coarse)').matches){
+ $('rows').value='5';$('cols').value=matchMedia('(orientation:landscape)').matches?'16':'10';
+ $('rowsVal').textContent=$('rows').value;$('colsVal').textContent=$('cols').value;
+ $('labels').value='octave';
+ $('settings').classList.add('hidden');document.body.classList.add('performance');
+ $('toggle').textContent='Edit';
+}
+$('phoneMenu').onclick=()=>{const box=$('phoneTools');const open=box.classList.toggle('open');$('phoneMenu').setAttribute('aria-expanded',String(open))};
+const groups={layout:['layout','rows','cols','root','scale','snap','octave'],expression:['gesture','center','bend','vertical','glide','touchResponse'],sound:['voiceMode','wave','attack','release','cutoff','resonance','eqLow','eqMid','eqHigh','delay','reverb','volume'],midi:['midi','labels','trails']};
+for(const [group,items] of Object.entries(groups)){for(const id of items){const parent=$(id)?.closest('label');if(parent)parent.dataset.group=group}}
+function showTab(group){for(const label of $('settings').querySelectorAll('label[data-group]'))label.classList.toggle('shown',label.dataset.group===group);for(const b of $('tabs').querySelectorAll('button'))b.classList.toggle('selected',b.dataset.tab===group)}
+$('tabs').addEventListener('click',e=>{const b=e.target.closest('button[data-tab]');if(b)showTab(b.dataset.tab)});showTab('layout');
+function shiftRegister(delta){if(touches.size){$('status').textContent='Release notes before shifting the register.';return}viewportShift=Math.max(-48,Math.min(48,viewportShift+delta));draw();$('status').textContent='Grid shifted '+(viewportShift/12)+' octave(s) from saved register.'} $('shiftDown').onclick=()=>shiftRegister(-12);$('shiftUp').onclick=()=>shiftRegister(12);$('play').onclick=async()=>{await enable();if(ac&&ac.state==='running')playTestTone()};$('testTone').onclick=async()=>{await enable();if(ac&&ac.state==='running')playTestTone()};
+function playTestTone(){const t=ac.currentTime,o=ac.createOscillator(),g=ac.createGain();o.type='sine';o.frequency.value=440;g.gain.setValueAtTime(.0001,t);g.gain.exponentialRampToValueAtTime(.20,t+.025);g.gain.exponentialRampToValueAtTime(.0001,t+.48);o.connect(g);g.connect(ac.destination);o.start(t);o.stop(t+.5);$('status').textContent='Test tone: A4 (440 Hz) · audio '+ac.state;}// Deliberate long press prevents accidental settings activation while playing.
+let editHoldTimer=null,editHoldTriggered=false;
+const editButton=$('toggle');
+function switchEditor(){const hidden=$('settings').classList.toggle('hidden');editButton.textContent=hidden?'Hold Edit':'Done';document.body.classList.toggle('performance',hidden);$('phoneTools').classList.remove('open');resize()}
+editButton.textContent='Hold Edit';
+editButton.addEventListener('pointerdown',e=>{if(!document.body.classList.contains('performance'))return;editHoldTriggered=false;clearTimeout(editHoldTimer);editHoldTimer=setTimeout(()=>{editHoldTriggered=true;switchEditor()},750)});
+for(const ev of ['pointerup','pointercancel','pointerleave','lostpointercapture'])editButton.addEventListener(ev,()=>clearTimeout(editHoldTimer));
+editButton.addEventListener('click',e=>{if(editHoldTriggered){editHoldTriggered=false;return}if(!document.body.classList.contains('performance'))switchEditor()});
+$('full').onclick=()=>{if(document.fullscreenElement)document.exitFullscreen?.();else document.documentElement.requestFullscreen?.().catch(()=>{});};
+$('save').onclick=()=>{const preset=currentPreset();try{localStorage.setItem('expressionSurfacePresetV3',JSON.stringify(preset));$('status').textContent='Preset saved on this device.'}catch(e){$('status').textContent='Storage unavailable in this viewer.'}};
+$('load').onclick=()=>{try{const data=JSON.parse(localStorage.getItem('expressionSurfacePresetV3')||localStorage.getItem('expressionSurfacePresetV2')||'null');if(!data)throw Error('No saved preset');if(Number.isFinite(data.viewportShift))viewportShift=data.viewportShift;applyPreset(data);$('status').textContent='Preset loaded.'}catch(e){$('status').textContent='No saved preset found.'}};
+function downloadBlob(blob,filename){const url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download=filename;document.body.append(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),10000)}
+function currentPreset(){return {...Object.fromEntries(ids.map(id=>[id,val(id)])),viewportShift,format:'ExpressionSurfacePreset',version:4}}
+function applyPreset(data){if(!data||typeof data!=='object')throw Error('Invalid setup');if(Number.isFinite(data.viewportShift))viewportShift=Math.max(-48,Math.min(48,data.viewportShift));for(const id of ids){if(data[id]===undefined)continue;const control=$(id),v=String(data[id]);if(control.tagName==='SELECT'&&![...control.options].some(o=>o.value===v))continue;if(control.type==='range'&&(!Number.isFinite(+v)||+v<+control.min||+v>+control.max))continue;control.value=v;control.dispatchEvent(new Event('input'))}resize()}
+$('exportPreset').onclick=()=>downloadBlob(new Blob([JSON.stringify(currentPreset(),null,2)],{type:'application/json'}),'expression-surface-setup.json');
+$('importPreset').onclick=()=>$('presetFile').click();
+$('presetFile').onchange=async e=>{const f=e.target.files?.[0];if(!f)return;try{const data=JSON.parse(await f.text());applyPreset(data);$('status').textContent='Setup imported successfully.'}catch(err){$('status').textContent='Could not import setup: '+err.message}e.target.value=''};
+$('events').onclick=()=>{if(taking){for(const [id,n] of takeHeld){take.push({ms:Math.round(performance.now()-takeStart),type:'off',n,id})}takeHeld.clear();taking=false;$('events').textContent='● MIDI Take';$('events').classList.remove('recording');$('status').textContent=`Captured ${take.length} note events. Tap Export MIDI to save.`;return}take=[];takeHeld.clear();takeStart=performance.now();taking=true;$('events').textContent='■ Stop Take';$('events').classList.add('recording');$('status').textContent='Recording note events (not audio).'};
+function vlq(n){n=Math.max(0,Math.floor(n));const a=[n&127];while((n>>=7)>0)a.unshift((n&127)|128);return a}
+function midiFile(){const ev=[];for(const e of take){ev.push({tick:Math.round(e.ms*.96),kind:e.type==='on'?0x90:0x80,n:Math.max(0,Math.min(127,e.n))})}ev.sort((a,b)=>a.tick-b.tick||a.kind-b.kind);const tr=[0,0xff,0x51,3,7,161,32];let last=0;for(const e of ev){tr.push(...vlq(e.tick-last),e.kind,e.n,e.kind===0x90?95:0);last=e.tick}tr.push(0,0xff,0x2f,0);const u32=n=>[(n>>>24)&255,(n>>>16)&255,(n>>>8)&255,n&255];return new Uint8Array([77,84,104,100,0,0,0,6,0,0,0,1,1,224,77,84,114,107,...u32(tr.length),...tr])}
+$('midiExport').onclick=()=>{if(taking){$('status').textContent='Stop the MIDI take before exporting.';return}if(!take.length){$('status').textContent='Record a MIDI take first.';return}downloadBlob(new Blob([midiFile()],{type:'audio/midi'}),'expression-surface-take.mid');$('status').textContent='MIDI file exported. Pitch slides are represented as retriggered semitone notes.'};
+$('record').onclick=async()=>{await enable();if(recording){recorder.stop();recording=false;$('record').classList.remove('recording');$('record').textContent='● Record';return}if(!ac.createMediaStreamDestination||typeof MediaRecorder==='undefined'){$('status').textContent='Audio recording is not supported by this browser.';return}const dest=ac.createMediaStreamDestination();compressor.connect(dest);recordChunks=[];try{recorder=new MediaRecorder(dest.stream);recorder.ondataavailable=e=>{if(e.data.size)recordChunks.push(e.data)};recorder.onstop=()=>{compressor.disconnect(dest);const blob=new Blob(recordChunks,{type:recorder.mimeType||'audio/webm'}),url=URL.createObjectURL(blob),a=document.createElement('a');a.href=url;a.download='expression-surface-recording.'+(blob.type.includes('mp4')?'m4a':'webm');a.click();setTimeout(()=>URL.revokeObjectURL(url),2000)};recorder.start();recording=true;$('record').classList.add('recording');$('record').textContent='■ Stop';}catch(e){compressor.disconnect(dest);$('status').textContent='Recording failed in this browser.'}};
+if(navigator.requestMIDIAccess){navigator.requestMIDIAccess().then(m=>{midiAccess=m;function update(){const sel=$('midi'),old=sel.value;sel.innerHTML='<option value="">MIDI Off</option>';for(const o of m.outputs.values())sel.add(new Option(o.name,o.id));sel.value=old;sel.onchange=()=>midiOutput=m.outputs.get(sel.value)||null;}m.onstatechange=update;update()}).catch(()=>{$('status').textContent='MIDI access was declined or unavailable.'})}
+new ResizeObserver(()=>requestAnimationFrame(resize)).observe(stage);window.addEventListener('resize',resize);window.visualViewport?.addEventListener('resize',resize);document.addEventListener('visibilitychange',()=>{if(document.hidden)allNotesOff()});resize();
+})();
+</script></body></html>
